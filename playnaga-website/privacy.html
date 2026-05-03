@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — NAGA</title>
+<meta name="description" content="Privacy Policy for NAGA mobile game by playnaga.live">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --gold-dim: #7a5f2a;
+    --jade: #2ecc8a;
+    --deep: #050a08;
+    --dark: #0b1410;
+    --panel: rgba(10,22,16,0.85);
+    --text: #d4c9a8;
+    --muted: #6b7a6e;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    line-height: 1.8;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 180px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(5,10,8,0.97);
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    backdrop-filter: blur(10px);
+  }
+  .nav-logo {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 16px;
+    color: var(--gold);
+    letter-spacing: 6px;
+    text-decoration: none;
+  }
+  .nav-link {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-link:hover { color: var(--gold-light); }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 80px 32px 120px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 64px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+  .page-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: var(--jade);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--gold);
+    letter-spacing: 6px;
+    margin-bottom: 16px;
+  }
+  .page-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .last-updated {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 6px 16px;
+    border-radius: 2px;
+  }
+
+  .toc {
+    background: var(--panel);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-left: 3px solid var(--gold-dim);
+    padding: 28px 32px;
+    margin-bottom: 56px;
+    border-radius: 0 3px 3px 0;
+  }
+  .toc-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .toc-list { list-style: none; }
+  .toc-list li { margin-bottom: 8px; }
+  .toc-list a {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .toc-list a:hover { color: var(--gold); }
+  .toc-list a::before { content: '▸  '; color: var(--gold-dim); }
+
+  section.policy-section {
+    margin-bottom: 56px;
+    scroll-margin-top: 80px;
+  }
+  .section-num {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--jade);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h2.section-heading {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+  }
+  p {
+    font-size: 17px;
+    color: var(--text);
+    font-weight: 300;
+    margin-bottom: 18px;
+  }
+  ul.policy-list {
+    list-style: none;
+    margin: 0 0 20px 0;
+    padding: 0;
+  }
+  ul.policy-list li {
+    font-size: 16px;
+    color: var(--text);
+    font-weight: 300;
+    padding: 8px 0 8px 24px;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  ul.policy-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--gold-dim);
+    font-size: 12px;
+    top: 10px;
+  }
+  strong { color: var(--gold-light); font-weight: 600; }
+  em { color: var(--muted); }
+  a.inline-link {
+    color: var(--jade);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(46,204,138,0.3);
+    transition: border-color 0.2s;
+  }
+  a.inline-link:hover { border-color: var(--jade); }
+
+  .callout {
+    background: rgba(46,204,138,0.05);
+    border: 1px solid rgba(46,204,138,0.2);
+    border-left: 3px solid var(--jade);
+    padding: 20px 24px;
+    margin: 24px 0;
+    border-radius: 0 3px 3px 0;
+  }
+  .callout p { margin-bottom: 0; font-size: 16px; color: var(--text); }
+
+  .contact-box {
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    padding: 32px;
+    text-align: center;
+    margin-top: 64px;
+  }
+  .contact-box h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .contact-box p { font-size: 16px; margin-bottom: 20px; }
+  .contact-email {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--deep);
+    background: linear-gradient(135deg, var(--gold), #a07828);
+    padding: 12px 28px;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: opacity 0.2s;
+  }
+  .contact-email:hover { opacity: 0.85; }
+
+  footer {
+    border-top: 1px solid rgba(201,168,76,0.1);
+    padding: 32px 40px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-copy { font-size: 13px; color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="nav-logo">NAGA</a>
+  <a href="/index.html" class="nav-link">← Back to Home</a>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <p class="page-eyebrow">Legal</p>
+    <h1 class="page-title">PRIVACY POLICY</h1>
+    <p class="page-subtitle">NAGA — Rise of the Serpent God</p>
+    <span class="last-updated">Last Updated: January 1, 2025</span>
+  </div>
+
+  <div class="toc">
+    <p class="toc-title">Contents</p>
+    <ul class="toc-list">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#information">Information We Collect</a></li>
+      <li><a href="#usage">How We Use Your Information</a></li>
+      <li><a href="#sharing">Sharing of Information</a></li>
+      <li><a href="#advertising">Advertising & Analytics</a></li>
+      <li><a href="#children">Children's Privacy</a></li>
+      <li><a href="#data-retention">Data Retention</a></li>
+      <li><a href="#your-rights">Your Rights</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#changes">Changes to This Policy</a></li>
+      <li><a href="#contact">Contact Us</a></li>
+    </ul>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section class="policy-section" id="overview">
+    <p class="section-num">Section 01</p>
+    <h2 class="section-heading">Overview</h2>
+    <p>Welcome to NAGA ("the Game", "we", "us", or "our"), operated by playnaga.live. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you download and play our mobile application on iOS and Android devices.</p>
+    <p>By downloading or using the Game, you agree to the practices described in this Privacy Policy. If you do not agree, please do not use the Game.</p>
+    <div class="callout">
+      <p>🐍 <strong>Short version:</strong> We collect only what's necessary to run the game and improve your experience. We do not sell your personal data to third parties. Ever.</p>
+    </div>
+  </section>
+
+  <!-- INFORMATION WE COLLECT -->
+  <section class="policy-section" id="information">
+    <p class="section-num">Section 02</p>
+    <h2 class="section-heading">Information We Collect</h2>
+    <p>We may collect the following categories of information:</p>
+
+    <p><strong>Information You Provide Directly</strong></p>
+    <ul class="policy-list">
+      <li>Username or display name you choose within the Game</li>
+      <li>Email address, if you register an account or sign up for launch notifications</li>
+      <li>Customer support messages or feedback you submit to us</li>
+    </ul>
+
+    <p><strong>Information Collected Automatically</strong></p>
+    <ul class="policy-list">
+      <li>Device type, operating system, and OS version</li>
+      <li>Unique device identifiers (e.g., advertising ID / IDFA / GAID)</li>
+      <li>IP address and approximate geographic location (country/region level only)</li>
+      <li>Gameplay data: scores, session length, game modes played, level progress</li>
+      <li>In-app purchase history and transaction identifiers (not full payment card data)</li>
+      <li>Crash logs and performance diagnostics</li>
+      <li>Date and time of access, features used</li>
+    </ul>
+
+    <p><strong>Information from Third Parties</strong></p>
+    <ul class="policy-list">
+      <li>If you sign in via Apple ID or Google Play Games, we receive a unique identifier and display name from that service</li>
+      <li>Advertising networks may share aggregated, anonymized data about ad interactions</li>
+    </ul>
+  </section>
+
+  <!-- HOW WE USE -->
+  <section class="policy-section" id="usage">
+    <p class="section-num">Section 03</p>
+    <h2 class="section-heading">How We Use Your Information</h2>
+    <p>We use the information we collect to:</p>
+    <ul class="policy-list">
+      <li>Operate, maintain, and improve the Game and its features</li>
+      <li>Provide and manage your account, progress, and in-game purchases</li>
+      <li>Process and fulfill in-app purchases through Apple App Store or Google Play</li>
+      <li>Enable real-time multiplayer matchmaking and leaderboard features</li>
+      <li>Personalize your in-game experience (e.g., Serpent DNA system)</li>
+      <li>Send you service-related notifications (e.g., game updates, maintenance)</li>
+      <li>Send you marketing communications if you have opted in (you may opt out at any time)</li>
+      <li>Respond to your customer support inquiries</li>
+      <li>Detect, investigate, and prevent fraudulent transactions and cheating</li>
+      <li>Comply with legal obligations</li>
+      <li>Analyze usage trends to improve game design and user experience</li>
+    </ul>
+  </section>
+
+  <!-- SHARING -->
+  <section class="policy-section" id="sharing">
+    <p class="section-num">Section 04</p>
+    <h2 class="section-heading">Sharing of Information</h2>
+    <p>We do <strong>not</strong> sell, rent, or trade your personal information. We may share information only in the following circumstances:</p>
+    <ul class="policy-list">
+      <li><strong>Service Providers:</strong> Trusted third-party vendors who help us operate the Game (e.g., cloud hosting, analytics, customer support tools). These parties are bound by data processing agreements and may not use your data for their own purposes.</li>
+      <li><strong>Multiplayer Features:</strong> Your username and rank may be visible to other players in leaderboards, match lobbies, and public rankings.</li>
+      <li><strong>Legal Requirements:</strong> If required by law, court order, or governmental authority, or to protect the rights, property, or safety of our users or the public.</li>
+      <li><strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of assets, your data may be transferred. We will notify you before this occurs.</li>
+      <li><strong>With Your Consent:</strong> For any other purpose with your explicit prior consent.</li>
+    </ul>
+  </section>
+
+  <!-- ADVERTISING -->
+  <section class="policy-section" id="advertising">
+    <p class="section-num">Section 05</p>
+    <h2 class="section-heading">Advertising &amp; Analytics</h2>
+    <p>NAGA may display optional rewarded advertisements (e.g., watch an ad to earn bonus in-game coins). We use third-party advertising and analytics services including:</p>
+    <ul class="policy-list">
+      <li><strong>Unity Ads</strong> — rewarded video advertising</li>
+      <li><strong>Google AdMob / AppLovin MAX</strong> — ad mediation and delivery</li>
+      <li><strong>Firebase Analytics / GameAnalytics</strong> — gameplay analytics and performance tracking</li>
+    </ul>
+    <p>These services may collect your advertising ID, device information, and interaction data to serve relevant ads and measure ad performance. You can opt out of interest-based advertising at any time:</p>
+    <ul class="policy-list">
+      <li><strong>iOS:</strong> Settings → Privacy & Security → Tracking → disable "Allow Apps to Request to Track"</li>
+      <li><strong>Android:</strong> Settings → Google → Ads → Opt out of Ads Personalisation</li>
+    </ul>
+    <p>Purchasing the "Remove Ads" option disables all interstitial ads. Optional rewarded ads remain available but are never mandatory.</p>
+  </section>
+
+  <!-- CHILDREN -->
+  <section class="policy-section" id="children">
+    <p class="section-num">Section 06</p>
+    <h2 class="section-heading">Children's Privacy</h2>
+    <p>NAGA is rated for ages <strong>12 and above</strong>. We do not knowingly collect personal information from children under the age of 13 (or the applicable minimum age in your jurisdiction).</p>
+    <p>If you are a parent or guardian and believe your child under 13 has provided us with personal information, please contact us immediately at <a href="mailto:support@playnaga.live" class="inline-link">support@playnaga.live</a>. We will promptly delete such information from our records.</p>
+    <div class="callout">
+      <p>If you are under 13 years of age, please do not use the Game or provide any information about yourself to us.</p>
+    </div>
+  </section>
+
+  <!-- DATA RETENTION -->
+  <section class="policy-section" id="data-retention">
+    <p class="section-num">Section 07</p>
+    <h2 class="section-heading">Data Retention</h2>
+    <p>We retain your personal information for as long as your account is active or as needed to provide services. Specifically:</p>
+    <ul class="policy-list">
+      <li>Account data is retained while your account remains active</li>
+      <li>Gameplay data and progress is retained to provide continuity of service</li>
+      <li>Upon account deletion request, we will delete or anonymize your data within <strong>30 days</strong>, except where retention is required by law</li>
+      <li>Anonymized, aggregated analytics data may be retained indefinitely as it cannot identify you</li>
+      <li>Crash logs and diagnostic data are retained for a maximum of 90 days</li>
+    </ul>
+    <p>To request deletion of your account and associated data, email us at <a href="mailto:support@playnaga.live" class="inline-link">support@playnaga.live</a> with the subject line "Account Deletion Request."</p>
+  </section>
+
+  <!-- YOUR RIGHTS -->
+  <section class="policy-section" id="your-rights">
+    <p class="section-num">Section 08</p>
+    <h2 class="section-heading">Your Rights</h2>
+    <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+    <ul class="policy-list">
+      <li><strong>Access:</strong> Request a copy of the personal data we hold about you</li>
+      <li><strong>Correction:</strong> Request correction of inaccurate or incomplete data</li>
+      <li><strong>Deletion:</strong> Request deletion of your personal data ("right to be forgotten")</li>
+      <li><strong>Portability:</strong> Receive your data in a structured, machine-readable format</li>
+      <li><strong>Objection:</strong> Object to processing of your data for marketing purposes</li>
+      <li><strong>Withdrawal of Consent:</strong> Withdraw consent for data processing at any time</li>
+      <li><strong>Restriction:</strong> Request restriction of how we use your data in certain circumstances</li>
+    </ul>
+    <p>To exercise any of these rights, contact us at <a href="mailto:support@playnaga.live" class="inline-link">support@playnaga.live</a>. We will respond within 30 days. <em>These rights apply to users in the EU (GDPR), California (CCPA), and other applicable jurisdictions.</em></p>
+  </section>
+
+  <!-- SECURITY -->
+  <section class="policy-section" id="security">
+    <p class="section-num">Section 09</p>
+    <h2 class="section-heading">Security</h2>
+    <p>We implement industry-standard security measures to protect your information, including:</p>
+    <ul class="policy-list">
+      <li>Encryption of data in transit using TLS/SSL</li>
+      <li>Encrypted storage of sensitive data at rest</li>
+      <li>Regular security audits and vulnerability testing</li>
+      <li>Access controls limiting employee access to personal data on a need-to-know basis</li>
+    </ul>
+    <p>However, no method of transmission over the internet or electronic storage is 100% secure. While we strive to protect your personal information, we cannot guarantee its absolute security. In the event of a data breach, we will notify affected users as required by applicable law.</p>
+  </section>
+
+  <!-- CHANGES -->
+  <section class="policy-section" id="changes">
+    <p class="section-num">Section 10</p>
+    <h2 class="section-heading">Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time to reflect changes in our practices or applicable laws. When we make material changes, we will:</p>
+    <ul class="policy-list">
+      <li>Update the "Last Updated" date at the top of this page</li>
+      <li>Notify you via in-app notification or email (where applicable)</li>
+      <li>For significant changes, request your renewed consent where required by law</li>
+    </ul>
+    <p>Your continued use of the Game after any changes constitutes acceptance of the updated Policy. We encourage you to review this page periodically.</p>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="policy-section" id="contact">
+    <p class="section-num">Section 11</p>
+    <h2 class="section-heading">Contact Us</h2>
+    <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact us:</p>
+    <ul class="policy-list">
+      <li><strong>Email:</strong> <a href="mailto:support@playnaga.live" class="inline-link">support@playnaga.live</a></li>
+      <li><strong>Website:</strong> <a href="https://playnaga.live" class="inline-link">playnaga.live</a></li>
+      <li><strong>Response Time:</strong> We aim to respond to all privacy inquiries within 5 business days</li>
+    </ul>
+  </section>
+
+  <div class="contact-box">
+    <h3>Questions About Your Privacy?</h3>
+    <p>Our team is here to help. Reach out and we'll respond within 5 business days.</p>
+    <a href="mailto:support@playnaga.live" class="contact-email">support@playnaga.live</a>
+  </div>
+
+</div>
+
+<footer>
+  <p class="footer-copy">© 2025 playnaga.live — NAGA: Rise of the Serpent God. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
