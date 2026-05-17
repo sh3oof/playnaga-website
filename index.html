@@ -1,584 +1,1778 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NAGA — Rise of the Serpent Soul</title>
-  <meta name="description" content="The ancient arena awakens. Slither, grow, and dominate in NAGA — a fast-paced snake game built for those who dare to rise. Available now on iOS." />
-  <meta property="og:title" content="NAGA — Rise of the Serpent Soul" />
-  <meta property="og:description" content="The ancient arena awakens. Slither, grow, and dominate. Available now on iOS." />
-  <meta property="og:url" content="https://playnaga.live" />
-  <meta property="og:image" content="https://playnaga.live/icon.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAGA — Rise of the Serpent Soul</title>
+<meta name="description" content="The ancient serpent awakens. A dark mythological snake game. Available now on iOS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-    :root {
-      --gold: #c9a84c;
-      --gold-light: #e8c97a;
-      --gold-dim: #7a6030;
-      --red: #8b1a1a;
-      --red-bright: #c0392b;
-      --bg: #090909;
-      --bg2: #0f0f0f;
-      --bg3: #141414;
-      --text: #d4c5a0;
-      --text-dim: #7a7060;
-      --white: #f5f0e8;
-    }
+<style>
+:root {
+  --bg:        #020b04;
+  --jade:      #1de874;
+  --jade-dim:  #0d7a3a;
+  --jade-dark: #041a0a;
+  --gold:      #c9a84c;
+  --gold-dim:  #7a5e1a;
+  --gold-pale: #e8d49a;
+  --red:       #e84560;
+  --panel:     #030f06;
+  --text:      #c8e8cc;
+  --text-dim:  #5a8060;
+}
 
-    html { scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Crimson Pro', Georgia, serif;
-      font-size: 18px;
-      line-height: 1.7;
-      overflow-x: hidden;
-    }
+html { scroll-behavior: smooth; }
 
-    /* ── NOISE OVERLAY ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 999;
-      opacity: 0.4;
-    }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Pro', Georgia, serif;
+  overflow-x: hidden;
+  cursor: none;
+}
 
-    /* ── NAV ── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 2.5rem;
-      background: linear-gradient(to bottom, rgba(9,9,9,0.95), transparent);
-    }
+/* ── CUSTOM CURSOR ── */
+#cursor {
+  position: fixed;
+  width: 12px; height: 12px;
+  background: var(--jade);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px var(--jade), 0 0 60px rgba(29,232,116,0.4);
+  transition: transform 0.05s, background 0.2s;
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(29,232,116,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease, width 0.2s, height 0.2s, border-color 0.2s;
+}
 
-    .nav-logo {
-      font-family: 'Cinzel', serif;
-      font-weight: 900;
-      font-size: 1.1rem;
-      color: var(--gold);
-      letter-spacing: 0.15em;
-      text-decoration: none;
-    }
+/* ── SERPENT TRAIL ── */
+#trail-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0.6;
+}
 
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9000;
+  opacity: 0.35;
+}
 
-    .nav-links a {
-      color: var(--text-dim);
-      text-decoration: none;
-      font-family: 'Cinzel', serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      transition: color 0.2s;
-    }
+/* ── HERO ── */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 20px;
+}
 
-    .nav-links a:hover { color: var(--gold); }
+#arena-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+}
 
-    /* ── HERO ── */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 6rem 2rem 4rem;
-      position: relative;
-      overflow: hidden;
-    }
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 60% 50% at 50% 60%, rgba(139,26,26,0.18) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 50% 100%, rgba(201,168,76,0.08) 0%, transparent 60%);
-    }
+.naga-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 8px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeUp 1s 0.3s forwards;
+}
 
-    .hero-badge {
-      display: inline-block;
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--gold);
-      border: 1px solid var(--gold-dim);
-      padding: 0.4rem 1.2rem;
-      margin-bottom: 2.5rem;
-      animation: fadeUp 0.8s ease both;
-    }
+.naga-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(72px, 15vw, 160px);
+  font-weight: 900;
+  line-height: 0.85;
+  color: transparent;
+  background: linear-gradient(180deg, #e8d49a 0%, #c9a84c 40%, #7a5e1a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: none;
+  position: relative;
+  opacity: 0;
+  animation: titleReveal 1.4s 0.6s forwards;
+  filter: drop-shadow(0 0 60px rgba(201,168,76,0.4));
+}
 
-    .hero-icon {
-      width: 120px;
-      height: 120px;
-      border-radius: 26px;
-      margin-bottom: 2rem;
-      box-shadow: 0 0 60px rgba(201,168,76,0.2), 0 0 120px rgba(139,26,26,0.15);
-      animation: fadeUp 0.8s 0.1s ease both;
-    }
+.naga-title::after {
+  content: 'NAGA';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(29,232,116,0.08) 0%, transparent 60%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
-    .hero-title {
-      font-family: 'Cinzel', serif;
-      font-weight: 900;
-      font-size: clamp(3rem, 8vw, 6.5rem);
-      color: var(--white);
-      line-height: 0.9;
-      letter-spacing: -0.01em;
-      animation: fadeUp 0.8s 0.2s ease both;
-    }
+.naga-subtitle {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(11px, 2vw, 16px);
+  letter-spacing: 5px;
+  color: var(--jade);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeUp 1s 1.2s forwards;
+}
 
-    .hero-title span {
-      display: block;
-      background: linear-gradient(135deg, var(--gold-light), var(--gold), #a07830);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+.serpent-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+  animation: fadeUp 1s 1.5s forwards;
+}
+.serpent-divider::before, .serpent-divider::after {
+  content: '';
+  width: 80px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim));
+}
+.serpent-divider::after { background: linear-gradient(90deg, var(--gold-dim), transparent); }
+.serpent-divider span { color: var(--gold); font-size: 18px; }
 
-    .hero-subtitle {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(0.75rem, 2vw, 0.9rem);
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-top: 0.5rem;
-      margin-bottom: 1.8rem;
-      animation: fadeUp 0.8s 0.3s ease both;
-    }
+.hero-desc {
+  font-size: clamp(15px, 2vw, 19px);
+  font-style: italic;
+  color: var(--text-dim);
+  max-width: 480px;
+  line-height: 1.7;
+  font-weight: 300;
+  opacity: 0;
+  animation: fadeUp 1s 1.7s forwards;
+}
 
-    .hero-desc {
-      max-width: 520px;
-      font-size: 1.15rem;
-      color: var(--text);
-      font-style: italic;
-      font-weight: 300;
-      line-height: 1.8;
-      margin-bottom: 2.8rem;
-      animation: fadeUp 0.8s 0.4s ease both;
-    }
+.cta-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeUp 1s 2s forwards;
+}
 
-    .btn-appstore {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: var(--white);
-      color: #000;
-      text-decoration: none;
-      border-radius: 10px;
-      padding: 0.7rem 1.6rem;
-      font-family: -apple-system, sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: transform 0.2s, box-shadow 0.2s;
-      animation: fadeUp 0.8s 0.5s ease both;
-      box-shadow: 0 4px 30px rgba(201,168,76,0.25);
-    }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: linear-gradient(135deg, var(--jade-dim), #0a5028);
+  border: 1px solid var(--jade);
+  color: var(--jade);
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  box-shadow: 0 0 30px rgba(29,232,116,0.2), inset 0 0 30px rgba(29,232,116,0.05);
+  cursor: none;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(29,232,116,0.15), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.4s;
+}
+.btn-primary:hover { box-shadow: 0 0 60px rgba(29,232,116,0.5), inset 0 0 30px rgba(29,232,116,0.1); transform: translateY(-2px); }
+.btn-primary:hover::before { transform: translateX(0); }
 
-    .btn-appstore:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 40px rgba(201,168,76,0.35);
-    }
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s;
+  cursor: none;
+}
+.btn-secondary:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); box-shadow: 0 0 30px rgba(201,168,76,0.2); }
 
-    .btn-appstore svg { width: 20px; height: 20px; }
+.badge-ios {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold-dim);
+  opacity: 0;
+  animation: fadeUp 1s 2.3s forwards;
+}
+.badge-dot { width: 6px; height: 6px; background: var(--jade); border-radius: 50%; animation: pulse-dot 2s infinite; }
 
-    .scroll-hint {
-      position: absolute;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-dim);
-      font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      animation: fadeUp 1s 1s ease both;
-    }
+/* ── SCROLL INDICATOR ── */
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 1s 2.5s forwards;
+}
+.scroll-hint span {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.scroll-line {
+  width: 1px;
+  height: 50px;
+  background: linear-gradient(180deg, var(--jade-dim), transparent);
+  animation: scrollLine 2s infinite;
+}
 
-    .scroll-line {
-      width: 1px;
-      height: 40px;
-      background: linear-gradient(to bottom, var(--gold-dim), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
-    }
+/* ── SECTION BASE ── */
+section {
+  position: relative;
+  overflow: hidden;
+}
 
-    /* ── DIVIDER ── */
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
+.section-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 6px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
 
-    .divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold-dim), transparent); }
-    .divider-symbol { color: var(--gold); font-size: 1.2rem; }
+.section-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 700;
+  color: var(--gold-pale);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
 
-    /* ── SECTION ── */
-    section { padding: 6rem 2rem; }
+.section-body {
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--text-dim);
+  font-weight: 300;
+  font-style: italic;
+  max-width: 560px;
+}
 
-    .section-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--gold);
-      text-align: center;
-      margin-bottom: 1rem;
-    }
+/* ── STORY SECTION ── */
+#story {
+  padding: 140px 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
+}
 
-    .section-title {
-      font-family: 'Cinzel', serif;
-      font-weight: 900;
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      color: var(--white);
-      text-align: center;
-      margin-bottom: 1rem;
-      line-height: 1.1;
-    }
+.story-text { }
 
-    .section-desc {
-      text-align: center;
-      color: var(--text-dim);
-      font-style: italic;
-      max-width: 480px;
-      margin: 0 auto 4rem;
-      font-size: 1.05rem;
-    }
+.story-visual {
+  position: relative;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    /* ── FEATURES GRID ── */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5px;
-      max-width: 1000px;
-      margin: 0 auto;
-      background: var(--gold-dim);
-      border: 1px solid var(--gold-dim);
-    }
+.story-glyph {
+  font-size: 180px;
+  animation: float 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 40px rgba(29,232,116,0.6));
+  user-select: none;
+}
 
-    .feature-card {
-      background: var(--bg2);
-      padding: 2.5rem 2rem;
-      transition: background 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
+.story-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid;
+  animation: spinRing linear infinite;
+}
+.story-ring:nth-child(1) { width: 300px; height: 300px; border-color: rgba(201,168,76,0.15); animation-duration: 20s; }
+.story-ring:nth-child(2) { width: 240px; height: 240px; border-color: rgba(29,232,116,0.1); animation-duration: 14s; animation-direction: reverse; }
+.story-ring:nth-child(3) { width: 360px; height: 360px; border-color: rgba(201,168,76,0.07); animation-duration: 30s; }
 
-    .feature-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
+/* ── WORLDS ── */
+#worlds {
+  padding: 120px 40px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(29,232,116,0.04) 0%, transparent 70%);
+}
+.worlds-header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 80px;
+}
+.worlds-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.world-card {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+  cursor: none;
+  group: true;
+}
+.world-card:nth-child(1) .world-bg { background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 50%, #050510 100%); }
+.world-card:nth-child(2) .world-bg { background: linear-gradient(135deg, #041a08 0%, #0a2a10 50%, #021008 100%); }
+.world-card:nth-child(3) .world-bg { background: linear-gradient(135deg, #0a0510 0%, #1a0520 50%, #050210 100%); }
+.world-card:nth-child(4) .world-bg { background: linear-gradient(135deg, #1a0a00 0%, #2a1500 50%, #100500 100%); }
+.world-card:nth-child(5) .world-bg { background: linear-gradient(135deg, #050a1a 0%, #0a1530 50%, #020510 100%); }
+.world-card:nth-child(6) .world-bg { background: linear-gradient(135deg, #1a0510 0%, #2a0820 50%, #100210 100%); }
+.world-card:nth-child(7) .world-bg { background: linear-gradient(135deg, #1a0500 0%, #2a0a00 50%, #0f0200 100%); }
+.world-card:nth-child(8) .world-bg { background: linear-gradient(135deg, #001a2a 0%, #003050 50%, #00101a 100%); }
 
-    .feature-card:hover { background: var(--bg3); }
-    .feature-card:hover::before { opacity: 1; }
+.world-bg {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.6s ease;
+}
+.world-card:hover .world-bg { transform: scale(1.08); }
 
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
+.world-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.world-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: particleFloat linear infinite;
+  opacity: 0;
+}
 
-    .feature-title {
-      font-family: 'Cinzel', serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 0.6rem;
-    }
+.world-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(2,11,4,0.9) 0%, transparent 60%);
+  transition: background 0.4s;
+}
+.world-card:hover .world-overlay { background: linear-gradient(0deg, rgba(2,11,4,0.7) 0%, rgba(2,11,4,0.2) 100%); }
 
-    .feature-text {
-      color: var(--text-dim);
-      font-size: 0.95rem;
-      line-height: 1.7;
-    }
+.world-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  font-size: 52px;
+  transition: transform 0.4s, filter 0.4s;
+  filter: drop-shadow(0 0 20px rgba(29,232,116,0.3));
+}
+.world-card:hover .world-icon {
+  transform: translate(-50%, -65%) scale(1.15);
+  filter: drop-shadow(0 0 40px rgba(29,232,116,0.7));
+}
 
-    /* ── STATS ── */
-    .stats {
-      background: var(--bg2);
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
-      padding: 4rem 2rem;
-    }
+.world-name {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+}
+.world-name h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--jade);
+  margin-bottom: 4px;
+}
+.world-name p {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-style: italic;
+}
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 2rem;
-      max-width: 800px;
-      margin: 0 auto;
-      text-align: center;
-    }
+.world-border {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(29,232,116,0);
+  transition: border-color 0.4s;
+  pointer-events: none;
+}
+.world-card:hover .world-border { border-color: rgba(29,232,116,0.3); box-shadow: inset 0 0 30px rgba(29,232,116,0.05); }
 
-    .stat-number {
-      font-family: 'Cinzel', serif;
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: var(--gold);
-      line-height: 1;
-      margin-bottom: 0.4rem;
-    }
+/* ── FEATURES ── */
+#features {
+  padding: 140px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.features-header { text-align: center; margin-bottom: 100px; }
 
-    .stat-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px;
+}
+.feature-card {
+  background: var(--panel);
+  padding: 48px 36px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(201,168,76,0.08);
+  transition: border-color 0.4s, background 0.4s;
+  cursor: none;
+}
+.feature-card:hover {
+  border-color: rgba(201,168,76,0.2);
+  background: rgba(3,15,6,0.9);
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.feature-card:hover::before { opacity: 1; }
 
-    /* ── CTA ── */
-    .cta {
-      text-align: center;
-      padding: 6rem 2rem;
-      position: relative;
-      overflow: hidden;
-    }
+.feature-number {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 72px;
+  color: rgba(201,168,76,0.06);
+  position: absolute;
+  top: 16px; right: 20px;
+  line-height: 1;
+  pointer-events: none;
+}
+.feature-icon { font-size: 36px; margin-bottom: 24px; display: block; }
+.feature-title {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--gold-pale);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+.feature-desc {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-dim);
+  font-style: italic;
+  font-weight: 300;
+}
 
-    .cta::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(139,26,26,0.12) 0%, transparent 70%);
-    }
+/* ── POWERUPS ── */
+#powerups {
+  padding: 120px 40px;
+  background: linear-gradient(180deg, transparent 0%, rgba(29,232,116,0.02) 50%, transparent 100%);
+  overflow: hidden;
+}
+.powerups-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.powerups-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.powerup-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: rgba(3,15,6,0.8);
+  border: 1px solid rgba(29,232,116,0.06);
+  transition: all 0.3s;
+  cursor: none;
+}
+.powerup-row:hover {
+  background: rgba(29,232,116,0.04);
+  border-color: rgba(29,232,116,0.2);
+  transform: translateX(6px);
+}
+.powerup-sym {
+  font-size: 24px;
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(29,232,116,0.5));
+}
+.powerup-info { flex: 1; }
+.powerup-name {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--jade);
+  text-transform: uppercase;
+}
+.powerup-effect { font-size: 13px; color: var(--text-dim); font-style: italic; margin-top: 2px; }
+.powerup-pts {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
 
-    .cta-glyph {
-      font-size: 4rem;
-      margin-bottom: 1.5rem;
-      display: block;
-      opacity: 0.6;
-    }
+/* ── RANKS ── */
+#ranks {
+  padding: 120px 40px;
+}
+.ranks-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.ranks-grid {
+  display: flex;
+  gap: 2px;
+  margin-top: 60px;
+}
+.rank-card {
+  flex: 1;
+  padding: 32px 16px;
+  background: var(--panel);
+  border: 1px solid rgba(201,168,76,0.07);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s;
+  cursor: none;
+}
+.rank-card:hover { transform: translateY(-8px); border-color: rgba(201,168,76,0.3); }
+.rank-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(201,168,76,0.08) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.rank-card:hover::after { opacity: 1; }
+.rank-badge { font-size: 40px; display: block; margin-bottom: 12px; }
+.rank-name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--gold-pale);
+  text-transform: uppercase;
+}
+.rank-req { font-size: 12px; color: var(--text-dim); font-style: italic; margin-top: 6px; }
+.rank-title-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--jade);
+  margin-top: 8px;
+}
 
-    .cta-title {
-      font-family: 'Cinzel', serif;
-      font-weight: 900;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      color: var(--white);
-      margin-bottom: 1rem;
-      line-height: 1.1;
-    }
+/* ── DNA ── */
+#dna {
+  padding: 140px 40px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(29,232,116,0.03) 0%, transparent 70%);
+}
+.dna-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.dna-spiral {
+  position: relative;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#dna-canvas { border-radius: 12px; }
 
-    .cta-sub {
-      color: var(--text-dim);
-      font-style: italic;
-      margin-bottom: 2.5rem;
-      font-size: 1.1rem;
-    }
+.dna-traits {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.dna-trait {
+  padding: 20px 24px;
+  background: rgba(3,15,6,0.8);
+  border-left: 2px solid var(--jade-dim);
+  transition: border-color 0.3s, background 0.3s;
+  cursor: none;
+}
+.dna-trait:hover { border-color: var(--jade); background: rgba(29,232,116,0.03); }
+.dna-trait-name {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--jade);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.dna-trait-desc { font-size: 14px; color: var(--text-dim); font-style: italic; }
+.dna-bar {
+  height: 2px;
+  background: rgba(29,232,116,0.1);
+  margin-top: 10px;
+  border-radius: 1px;
+  overflow: hidden;
+}
+.dna-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--jade-dim), var(--jade));
+  border-radius: 1px;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 1.2s ease;
+}
+.dna-trait:hover .dna-bar-fill { transform: scaleX(1); }
 
-    /* ── FOOTER ── */
-    footer {
-      background: var(--bg);
-      border-top: 1px solid #1a1a1a;
-      padding: 3rem 2rem;
-      text-align: center;
-    }
+/* ── STORE PREVIEW ── */
+#store-preview {
+  padding: 120px 40px;
+  background: radial-gradient(ellipse at 50% 100%, rgba(201,168,76,0.04) 0%, transparent 60%);
+}
+.store-inner { max-width: 1000px; margin: 0 auto; text-align: center; }
+.store-cards {
+  display: flex;
+  gap: 16px;
+  margin-top: 60px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.store-card {
+  flex: 0 0 200px;
+  background: var(--panel);
+  border: 1px solid rgba(201,168,76,0.1);
+  padding: 28px 20px;
+  border-radius: 4px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s;
+  cursor: none;
+}
+.store-card:hover {
+  border-color: rgba(201,168,76,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,168,76,0.1);
+}
+.store-card-badge {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: var(--gold-dim);
+  color: var(--gold-pale);
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+.store-card-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+.store-card-name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--gold-pale);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.store-card-price {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 22px;
+  color: var(--gold);
+}
+.store-card-type { font-size: 11px; color: var(--text-dim); font-style: italic; margin-top: 4px; }
 
-    .footer-logo {
-      font-family: 'Cinzel', serif;
-      font-weight: 900;
-      font-size: 1.2rem;
-      color: var(--gold);
-      letter-spacing: 0.15em;
-      margin-bottom: 1rem;
-    }
+/* ── FOOTER CTA ── */
+#footer-cta {
+  padding: 160px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.footer-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(29,232,116,0.07) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.footer-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(36px, 7vw, 80px);
+  font-weight: 700;
+  background: linear-gradient(180deg, var(--gold-pale) 0%, var(--gold) 60%, var(--gold-dim) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 20px;
+}
+.footer-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: var(--jade);
+  text-transform: uppercase;
+  margin-bottom: 48px;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 60px;
+  flex-wrap: wrap;
+}
+.footer-link {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.footer-link:hover { color: var(--jade); }
+.footer-copyright {
+  margin-top: 60px;
+  font-size: 12px;
+  color: rgba(90,128,96,0.5);
+  font-style: italic;
+}
 
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      list-style: none;
-      margin-bottom: 1.5rem;
-    }
+/* ── FLOATING PARTICLES ── */
+.particle-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fp {
+  position: absolute;
+  border-radius: 50%;
+  animation: particleFloat linear infinite;
+}
 
-    .footer-links a {
-      color: var(--text-dim);
-      text-decoration: none;
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      transition: color 0.2s;
-    }
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes titleReveal {
+  0%  { opacity: 0; transform: scale(0.92) translateY(20px); filter: drop-shadow(0 0 0px rgba(201,168,76,0)); }
+  100%{ opacity: 1; transform: scale(1) translateY(0); filter: drop-shadow(0 0 60px rgba(201,168,76,0.4)); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-20px); }
+}
+@keyframes spinRing {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes scrollLine {
+  0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+  50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  51%  { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0.3; }
+}
+@keyframes particleFloat {
+  0%   { transform: translateY(100%) translateX(0); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-100vh) translateX(var(--drift, 20px)); opacity: 0; }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--jade); }
+  50%       { opacity: 0.4; box-shadow: 0 0 2px var(--jade); }
+}
 
-    .footer-links a:hover { color: var(--gold); }
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+}
 
-    .footer-copy {
-      color: var(--text-dim);
-      font-size: 0.8rem;
-    }
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  #story { grid-template-columns: 1fr; gap: 40px; padding: 80px 24px; }
+  .story-visual { height: 250px; }
+  .story-glyph { font-size: 120px; }
+  .worlds-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: 1fr; }
+  .powerups-inner { grid-template-columns: 1fr; gap: 40px; }
+  .dna-inner { grid-template-columns: 1fr; gap: 40px; }
+  .dna-spiral { height: 300px; }
+  .ranks-grid { flex-wrap: wrap; }
+  .rank-card { flex: 0 0 calc(50% - 1px); }
+  #hero { padding: 100px 24px; }
+}
+@media (max-width: 600px) {
+  .worlds-grid { grid-template-columns: repeat(2, 1fr); }
+  .world-card { height: 200px; }
+  .store-cards { flex-direction: column; align-items: center; }
+  .ranks-grid { flex-direction: column; }
+}
 
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(2,11,4,0.95) 0%, transparent 100%);
+  backdrop-filter: blur(4px);
+}
+.nav-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 22px;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 3px;
+  cursor: none;
+}
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s;
+  cursor: none;
+}
+.nav-links a:hover { color: var(--jade); }
+@media (max-width: 700px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+}
 
-    @keyframes scrollPulse {
-      0%, 100% { opacity: 0.3; transform: scaleY(1); }
-      50%       { opacity: 1;   transform: scaleY(1.1); }
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      nav { padding: 1rem 1.2rem; }
-      .nav-links { gap: 1.2rem; }
-      .features-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+/* ── GLITCH ── */
+.glitch {
+  position: relative;
+  animation: glitchBase 8s infinite;
+}
+@keyframes glitchBase { 0%,95%,100% { clip-path: none; transform: none; } 96% { clip-path: inset(20% 0 50% 0); transform: translateX(-3px); } 97% { clip-path: inset(60% 0 10% 0); transform: translateX(3px); } 98% { clip-path: none; transform: none; } }
+</style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <a class="nav-logo" href="/">NAGA</a>
-    <ul class="nav-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="https://playnaga.live/privacy.html">Privacy</a></li>
-      <li><a href="mailto:support@playnaga.live">Support</a></li>
-    </ul>
-  </nav>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="trail-canvas"></canvas>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-badge">⚡ Now Available on iOS</div>
-    <img class="hero-icon" src="icon.png" alt="NAGA app icon" />
-    <h1 class="hero-title">
-      <span>NAGA</span>
-    </h1>
-    <p class="hero-subtitle">Rise of the Serpent Soul</p>
-    <p class="hero-desc">
-      The ancient arena awakens. Slither, grow, and dominate
-      in a fast-paced snake game built for those who dare to rise.
-      How long can you survive?
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">NAGA</a>
+  <ul class="nav-links">
+    <li><a href="#story">Origin</a></li>
+    <li><a href="#worlds">Worlds</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#dna">Serpent DNA</a></li>
+    <li><a href="#store-preview">Store</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="arena-canvas"></canvas>
+  
+  <div class="particle-field" id="hero-particles"></div>
+
+  <div class="hero-content">
+    <p class="naga-eyebrow">Sama Digital Innovation · iOS · 2026</p>
+    <h1 class="naga-title glitch">NAGA</h1>
+    <p class="naga-subtitle">Rise of the Serpent Soul</p>
+    <div class="serpent-divider"><span>🐍</span></div>
+    <p class="hero-desc">In the beginning, there was no light. Only the Void — and within it, a single coiled serpent. <em>The ancients called it NAGA.</em></p>
+    <div class="cta-row">
+      <a href="https://apps.apple.com" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Download on iOS
+      </a>
+      <a href="#story" class="btn-secondary">Enter the Temple ↓</a>
+    </div>
+    <div class="badge-ios">
+      <span class="badge-dot"></span>
+      Now Live on App Store
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Descend</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section id="story">
+  <div class="story-text reveal">
+    <p class="section-label">The Legend</p>
+    <h2 class="section-title">Before the World,<br>the Serpent</h2>
+    <p class="section-body">
+      Naga — the mythological serpent deity of Hindu and Buddhist tradition. Divine. Eternal. Hungry.<br><br>
+      For centuries it slept beneath the temple stones. A soul dared enter its domain. That soul is you. Feed it. Grow its power. And whatever you do — <em>never cross your own path.</em>
     </p>
-    <a class="btn-appstore" href="https://apps.apple.com/app/naga-rise-of-the-serpent-soul/id6746859295" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-      Download on the App Store
-    </a>
-    <div class="scroll-hint">
-      <div class="scroll-line"></div>
-      Discover
-    </div>
-  </section>
-
-  <!-- DIVIDER -->
-  <div class="divider">
-    <div class="divider-line"></div>
-    <span class="divider-symbol">🐍</span>
-    <div class="divider-line"></div>
   </div>
+  <div class="story-visual reveal">
+    <div class="story-ring"></div>
+    <div class="story-ring"></div>
+    <div class="story-ring"></div>
+    <div class="story-glyph">🐍</div>
+  </div>
+</section>
 
-  <!-- FEATURES -->
-  <section id="features">
-    <p class="section-label">The Game</p>
-    <h2 class="section-title">Ancient Power.<br>Modern Arena.</h2>
-    <p class="section-desc">Every session is a battle for survival. Every coin earned is a step toward glory.</p>
-
-    <div class="features-grid">
-      <div class="feature-card">
-        <span class="feature-icon">🐍</span>
-        <div class="feature-title">Grow & Dominate</div>
-        <p class="feature-text">Consume food, grow longer, and outlast every obstacle. Master the art of survival as the arena expands around you with every level.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">🏆</span>
-        <div class="feature-title">Daily Challenges</div>
-        <p class="feature-text">New objectives every day. Build your streak, earn bonus coins, and claim the weekly jackpot reward for seven days of dominance.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">💎</span>
-        <div class="feature-title">Epic Skins</div>
-        <p class="feature-text">Unlock a growing collection of serpent skins. Earn coins through gameplay or grab premium skins to make your NAGA unmistakably yours.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">❤️</span>
-        <div class="feature-title">Lives & Revivals</div>
-        <p class="feature-text">Death isn't always the end. Use lives wisely, revive mid-game with a quick ad, or stock up to keep your best runs alive.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">⚡</span>
-        <div class="feature-title">Level Up</div>
-        <p class="feature-text">Survive long enough and the arena expands — more space, more danger, more glory. Each level raises the stakes of your survival.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">🎵</span>
-        <div class="feature-title">Immersive Feel</div>
-        <p class="feature-text">Pulse-pounding sound effects and satisfying vibrations bring every bite, level-up, and near-miss to life. NAGA isn't just a game — it's a feeling.</p>
-      </div>
+<!-- WORLDS -->
+<section id="worlds">
+  <div class="worlds-header reveal">
+    <p class="section-label">Eight Arenas</p>
+    <h2 class="section-title">Every World,<br>a New Hunt</h2>
+  </div>
+  <div class="worlds-grid">
+    <div class="world-card reveal">
+      <div class="world-bg"></div>
+      <div class="world-particles" data-color="#7c3aed"></div>
+      <div class="world-overlay"></div>
+      <div class="world-icon">🌆</div>
+      <div class="world-name"><h3>Neon City</h3><p>Cyberpunk grids · Default</p></div>
+      <div class="world-border"></div>
     </div>
-  </section>
+    <div class="world-card reveal">
+      <div class="world-bg"></div>
+      <div class="world-particles" data-color="#1de874"></div>
+      <div class="world-overlay"></div>
+      <div class="world-icon">🌿</div>
+      <div class="world-name"><h3>Amazon Depths</h3><p>Bioluminescent jungle</p></div>
+      <div class="world-border"></div>
+    </div>
+    <div class="world-card reveal">
+      <div class="world-bg"></div>
+      <div class="world-particles" data-color="#6060ff"></div>
+      <div class="world-overlay"></div>
+      <div class="world-icon">🌌</div>
+      <div class="world-name"><h3>Cosmic Void</h3><p>Space and nebulae</p></div>
+      <div class="world-border"></div>
+    </div>
+    <div class="world-card reveal">
+      <div class="world-bg"></div>
+      <div class="world-particles" data-color="#c9a84c"></div>
+      <div class="world-overlay"></div>
+      <div class="world-icon">🏜️</div>
+      <div class="world-name"><h3>Sahara Storm</h3><p>Desert sandstorms</p></div>
+      <div class="world-border"></div>
+    </div>
+    <div class="world-card reveal">
+      <div class="world-bg"></div>
+      <div class="world-particles" data-color="#60d0f0"></div>
+      <div class="world-overlay"></div>
+      <div class="world-icon">💎</div>
+      <div class="world-name"><h3>Crystal Cavern</h3><p>Underground gems</p></div>
+      <div class="world-border"></div>
+    </div>
+    <div class="world-card reveal">
+      <div class="world-bg"></div>
+      <div class="world-particles" data-color="#ff80b0"></div>
+      <div class="world-overlay"></div>
+      <div class="world-icon">🌸</div>
+      <div class="world-name"><h3>Sakura Garden</h3><p>Japanese tranquility</p></div>
+      <div class="world-border"></div>
+    </div>
+    <div class="world-card reveal">
+      <div class="world-bg"></div>
+      <div class="world-particles" data-color="#ff4400"></div>
+      <div class="world-overlay"></div>
+      <div class="world-icon">🌋</div>
+      <div class="world-name"><h3>Inferno Rift</h3><p>Volcanic lava</p></div>
+      <div class="world-border"></div>
+    </div>
+    <div class="world-card reveal">
+      <div class="world-bg"></div>
+      <div class="world-particles" data-color="#80e8ff"></div>
+      <div class="world-overlay"></div>
+      <div class="world-icon">❄️</div>
+      <div class="world-name"><h3>Arctic Pulse</h3><p>Aurora and ice</p></div>
+      <div class="world-border"></div>
+    </div>
+  </div>
+</section>
 
-  <!-- STATS -->
-  <div class="stats">
-    <div class="stats-grid">
-      <div>
-        <div class="stat-number">∞</div>
-        <div class="stat-label">Endless Arenas</div>
+<!-- FEATURES -->
+<section id="features">
+  <div class="features-header reveal">
+    <p class="section-label">Why NAGA</p>
+    <h2 class="section-title">Forged in the<br>Temple's Fire</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <span class="feature-number">01</span>
+      <span class="feature-icon">⚡</span>
+      <h3 class="feature-title">Arena Expansion</h3>
+      <p class="feature-desc">As the serpent fills the arena, the world itself expands. Grow large enough and the temple walls recede — revealing new hunting grounds.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-number">02</span>
+      <span class="feature-icon">🎯</span>
+      <h3 class="feature-title">Daily Challenges</h3>
+      <p class="feature-desc">Three sacred trials each dawn — easy, medium, hard. Complete all seven days to claim the weekly Soul Jackpot of 500 coins.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-number">03</span>
+      <span class="feature-icon">❤️</span>
+      <h3 class="feature-title">The 4th Heart</h3>
+      <p class="feature-desc">Three lives by default. The fourth heart slot waits, locked. Unlock it permanently for a single offering — or earn it through wisdom each session.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-number">04</span>
+      <span class="feature-icon">🐍</span>
+      <h3 class="feature-title">Serpent DNA</h3>
+      <p class="feature-desc">No two serpents are alike. Your playstyle mutates your snake's appearance — speed stripes, armored scales, phantom transparency, battle scars.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-number">05</span>
+      <span class="feature-icon">🏆</span>
+      <h3 class="feature-title">Rank Ascension</h3>
+      <p class="feature-desc">Bronze to Serpent Elite. Unlock new titles, avatars, and exclusive skins that cannot be purchased — only earned through mastery.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-number">06</span>
+      <span class="feature-icon">🎮</span>
+      <h3 class="feature-title">Three Control Styles</h3>
+      <p class="feature-desc">D-Pad for purists. Simple left/right turns for Nokia nostalgia. Swipe for the touch-native. Your serpent, your way.</p>
+    </div>
+  </div>
+</section>
+
+<!-- POWER-UPS -->
+<section id="powerups">
+  <div class="powerups-inner">
+    <div class="reveal">
+      <p class="section-label">Sacred Objects</p>
+      <h2 class="section-title">Gifts from<br>the Temple</h2>
+      <p class="section-body">Every 20 feedings, a sacred object manifests in the arena. Consume it quickly — they vanish in ten heartbeats.</p>
+    </div>
+    <div class="powerups-list reveal">
+      <div class="powerup-row">
+        <span class="powerup-sym">★</span>
+        <div class="powerup-info"><div class="powerup-name">Gold Star</div><div class="powerup-effect">Pure soul energy — bonus points</div></div>
+        <span class="powerup-pts">+50</span>
       </div>
-      <div>
-        <div class="stat-number">7</div>
-        <div class="stat-label">Day Streak Jackpot</div>
+      <div class="powerup-row">
+        <span class="powerup-sym">◆</span>
+        <div class="powerup-info"><div class="powerup-name">Diamond</div><div class="powerup-effect">Serpent grows 3 segments instantly</div></div>
+        <span class="powerup-pts">+30</span>
       </div>
-      <div>
-        <div class="stat-number">Free</div>
-        <div class="stat-label">To Play</div>
+      <div class="powerup-row">
+        <span class="powerup-sym">⚡</span>
+        <div class="powerup-info"><div class="powerup-name">Lightning</div><div class="powerup-effect">Speed surge for 5 seconds</div></div>
+        <span class="powerup-pts">+40</span>
       </div>
-      <div>
-        <div class="stat-number">iOS</div>
-        <div class="stat-label">Available Now</div>
+      <div class="powerup-row">
+        <span class="powerup-sym">◉</span>
+        <div class="powerup-info"><div class="powerup-name">Shield</div><div class="powerup-effect">Absorbs one self-collision</div></div>
+        <span class="powerup-pts">+20</span>
+      </div>
+      <div class="powerup-row">
+        <span class="powerup-sym">✂</span>
+        <div class="powerup-info"><div class="powerup-name">Scissors</div><div class="powerup-effect">Tail cut in half — second chance</div></div>
+        <span class="powerup-pts">+30</span>
+      </div>
+      <div class="powerup-row">
+        <span class="powerup-sym">●</span>
+        <div class="powerup-info"><div class="powerup-name">Magnet</div><div class="powerup-effect">Food flies toward the serpent 5s</div></div>
+        <span class="powerup-pts">+25</span>
+      </div>
+      <div class="powerup-row">
+        <span class="powerup-sym">◷</span>
+        <div class="powerup-info"><div class="powerup-name">Clock</div><div class="powerup-effect">World slows to half speed 5s</div></div>
+        <span class="powerup-pts">+20</span>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- CTA -->
-  <section class="cta">
-    <span class="cta-glyph">🐍</span>
-    <h2 class="cta-title">Are you worthy of<br>the serpent soul?</h2>
-    <p class="cta-sub">Download NAGA and begin your ascent.</p>
-    <a class="btn-appstore" href="https://apps.apple.com/app/naga-rise-of-the-serpent-soul/id6746859295" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-      Download on the App Store
-    </a>
-  </section>
+<!-- RANKS -->
+<section id="ranks">
+  <div class="ranks-inner">
+    <div class="reveal">
+      <p class="section-label">Rank System</p>
+      <h2 class="section-title">Claim Your Throne</h2>
+      <p class="section-body" style="margin: 0 auto;">Five tiers of mastery. Each rank unlocks exclusive titles, avatars, and skins that coins cannot buy.</p>
+    </div>
+    <div class="ranks-grid reveal">
+      <div class="rank-card">
+        <span class="rank-badge">🥉</span>
+        <div class="rank-name">Bronze</div>
+        <div class="rank-req">The beginning</div>
+        <div class="rank-title-label">Serpent Initiate</div>
+      </div>
+      <div class="rank-card">
+        <span class="rank-badge">🥈</span>
+        <div class="rank-name">Silver</div>
+        <div class="rank-req">Score 500+</div>
+        <div class="rank-title-label">Jade Hunter</div>
+      </div>
+      <div class="rank-card">
+        <span class="rank-badge">🥇</span>
+        <div class="rank-name">Gold</div>
+        <div class="rank-req">Score 1,500+</div>
+        <div class="rank-title-label">Temple Guardian</div>
+      </div>
+      <div class="rank-card">
+        <span class="rank-badge">💎</span>
+        <div class="rank-name">Diamond</div>
+        <div class="rank-req">Score 3,000+</div>
+        <div class="rank-title-label">Diamond Viper</div>
+      </div>
+      <div class="rank-card">
+        <span class="rank-badge">👑</span>
+        <div class="rank-name">Elite</div>
+        <div class="rank-req">Top 1% globally</div>
+        <div class="rank-title-label">Serpent Elder</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-logo">NAGA</div>
-    <ul class="footer-links">
-      <li><a href="https://playnaga.live/privacy.html">Privacy Policy</a></li>
-      <li><a href="mailto:support@playnaga.live">Support</a></li>
-      <li><a href="mailto:hello@playnaga.live">Contact</a></li>
-    </ul>
-    <p class="footer-copy">© 2026 Sama Digital Innovation LLC — All rights reserved</p>
-  </footer>
+<!-- DNA -->
+<section id="dna">
+  <div class="dna-inner">
+    <div class="dna-spiral reveal">
+      <canvas id="dna-canvas" width="400" height="480"></canvas>
+    </div>
+    <div class="reveal">
+      <p class="section-label">Unique Feature</p>
+      <h2 class="section-title">Serpent DNA</h2>
+      <p class="section-body">No other snake game offers this. Every 10 matches, NAGA analyzes your playstyle and mutates your serpent. The mutations cannot be purchased — only earned.</p>
+      <div class="dna-traits" style="margin-top: 36px;">
+        <div class="dna-trait">
+          <div class="dna-trait-name">⚡ Speed Gene</div>
+          <div class="dna-trait-desc">Fast play → glowing speed stripes appear along the body</div>
+          <div class="dna-bar"><div class="dna-bar-fill" style="width:78%"></div></div>
+        </div>
+        <div class="dna-trait">
+          <div class="dna-trait-name">🛡 Size Gene</div>
+          <div class="dna-trait-desc">Grow massive → armored scales form on each segment</div>
+          <div class="dna-bar"><div class="dna-bar-fill" style="width:55%"></div></div>
+        </div>
+        <div class="dna-trait">
+          <div class="dna-trait-name">👻 Stealth Gene</div>
+          <div class="dna-trait-desc">Use Ghost → sections turn transparent and ethereal</div>
+          <div class="dna-bar"><div class="dna-bar-fill" style="width:32%"></div></div>
+        </div>
+        <div class="dna-trait">
+          <div class="dna-trait-name">💀 Aggression Gene</div>
+          <div class="dna-trait-desc">Hit traps → battle scars mark the serpent's history</div>
+          <div class="dna-bar"><div class="dna-bar-fill" style="width:90%"></div></div>
+        </div>
+        <div class="dna-trait">
+          <div class="dna-trait-name">📿 Longevity Gene</div>
+          <div class="dna-trait-desc">Long sessions → ancient rune markings emerge</div>
+          <div class="dna-bar"><div class="dna-bar-fill" style="width:44%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- STORE PREVIEW -->
+<section id="store-preview">
+  <div class="store-inner">
+    <div class="reveal">
+      <p class="section-label">Soul Treasury</p>
+      <h2 class="section-title">The Offering</h2>
+      <p class="section-body" style="margin: 0 auto;">Fair-to-win. Every gameplay advantage is earnable for free. The treasury offers only cosmetics, convenience, and soul coins.</p>
+    </div>
+    <div class="store-cards">
+      <div class="store-card reveal">
+        <span class="store-card-icon">❤️</span>
+        <div class="store-card-name">4th Heart</div>
+        <div class="store-card-price">$2.99</div>
+        <div class="store-card-type">Permanent · Non-Consumable</div>
+      </div>
+      <div class="store-card reveal">
+        <div class="store-card-badge">Popular</div>
+        <span class="store-card-icon">🪙</span>
+        <div class="store-card-name">Soul Chest</div>
+        <div class="store-card-price">$1.99</div>
+        <div class="store-card-type">1,600 Coins</div>
+      </div>
+      <div class="store-card reveal">
+        <div class="store-card-badge">Value</div>
+        <span class="store-card-icon">💎</span>
+        <div class="store-card-name">Soul Vault</div>
+        <div class="store-card-price">$2.99</div>
+        <div class="store-card-type">2,750 Coins</div>
+      </div>
+      <div class="store-card reveal">
+        <span class="store-card-icon">✂️</span>
+        <div class="store-card-name">Swipe Control</div>
+        <div class="store-card-price">$2.99</div>
+        <div class="store-card-type">Permanent Unlock</div>
+      </div>
+      <div class="store-card reveal">
+        <span class="store-card-icon">💛</span>
+        <div class="store-card-name">Second Chance</div>
+        <div class="store-card-price">$0.99</div>
+        <div class="store-card-type">5 Extra Lives</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section id="footer-cta">
+  <div class="footer-glow"></div>
+  <div class="reveal">
+    <p class="footer-sub">The Serpent Awakens</p>
+    <h2 class="footer-title">Feed the<br>Serpent</h2>
+    <div class="cta-row" style="margin-top: 0;">
+      <a href="https://apps.apple.com" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Download on iOS
+      </a>
+    </div>
+  </div>
+  <div class="footer-links">
+    <a class="footer-link" href="https://playnaga.live">playnaga.live</a>
+    <a class="footer-link" href="https://playnaga.live/privacy.html">Privacy Policy</a>
+    <a class="footer-link" href="mailto:support@playnaga.live">Support</a>
+  </div>
+  <p class="footer-copyright">© 2026 Sama Digital Innovation LLC · NAGA: Rise of the Serpent Soul</p>
+</section>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  setTimeout(() => {
+    ring.style.left = mx + 'px';
+    ring.style.top = my + 'px';
+  }, 80);
+});
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+    ring.style.width = '60px'; ring.style.height = '60px';
+    ring.style.borderColor = 'rgba(201,168,76,0.6)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+    ring.style.width = '36px'; ring.style.height = '36px';
+    ring.style.borderColor = 'rgba(29,232,116,0.5)';
+  });
+});
+
+// ── TRAIL CANVAS ──
+const trailCanvas = document.getElementById('trail-canvas');
+const trailCtx = trailCanvas.getContext('2d');
+trailCanvas.width = window.innerWidth;
+trailCanvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  trailCanvas.width = window.innerWidth;
+  trailCanvas.height = window.innerHeight;
+});
+const trailPoints = [];
+let prevMx = 0, prevMy = 0;
+document.addEventListener('mousemove', e => {
+  trailPoints.push({ x: e.clientX, y: e.clientY, age: 0 });
+  if (trailPoints.length > 60) trailPoints.shift();
+});
+function drawTrail() {
+  trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+  for (let i = 1; i < trailPoints.length; i++) {
+    const t = i / trailPoints.length;
+    const r = Math.max(0, 3 * t);
+    trailCtx.beginPath();
+    trailCtx.moveTo(trailPoints[i-1].x, trailPoints[i-1].y);
+    trailCtx.lineTo(trailPoints[i].x, trailPoints[i].y);
+    trailCtx.strokeStyle = `rgba(29,232,116,${t * 0.6})`;
+    trailCtx.lineWidth = r;
+    trailCtx.lineCap = 'round';
+    trailCtx.stroke();
+  }
+  requestAnimationFrame(drawTrail);
+}
+drawTrail();
+
+// ── HERO ARENA CANVAS (live snake game) ──
+const arenaCanvas = document.getElementById('arena-canvas');
+const actx = arenaCanvas.getContext('2d');
+function resizeArena() {
+  arenaCanvas.width = window.innerWidth;
+  arenaCanvas.height = window.innerHeight;
+}
+resizeArena();
+window.addEventListener('resize', resizeArena);
+
+const GRID = 28;
+let cols, rows, snake, dir, food, specialFood, tick;
+function initSnake() {
+  cols = Math.floor(arenaCanvas.width / GRID);
+  rows = Math.floor(arenaCanvas.height / GRID);
+  const midX = Math.floor(cols / 2);
+  const midY = Math.floor(rows / 2);
+  snake = [];
+  for (let i = 0; i < 12; i++) snake.push({ x: midX - i, y: midY });
+  dir = { x: 1, y: 0 };
+  food = spawnFood();
+  specialFood = null;
+  tick = 0;
+}
+function spawnFood() {
+  return {
+    x: Math.floor(Math.random() * (cols - 2)) + 1,
+    y: Math.floor(Math.random() * (rows - 2)) + 1
+  };
+}
+initSnake();
+
+let angle = 0;
+let dirChangeTimer = 0;
+function updateSnake() {
+  tick++;
+  dirChangeTimer++;
+  
+  // AI: steer toward food with occasional randomness
+  const head = snake[0];
+  const fx = food.x - head.x;
+  const fy = food.y - head.y;
+  
+  if (dirChangeTimer > 6) {
+    dirChangeTimer = 0;
+    if (Math.random() < 0.3) {
+      // Random turn
+      const turns = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+      const valid = turns.filter(d => !(d.x === -dir.x && d.y === -dir.y));
+      dir = valid[Math.floor(Math.random() * valid.length)];
+    } else {
+      // Move toward food
+      if (Math.abs(fx) > Math.abs(fy)) {
+        if (fx > 0 && dir.x !== -1) dir = {x:1,y:0};
+        else if (fx < 0 && dir.x !== 1) dir = {x:-1,y:0};
+      } else {
+        if (fy > 0 && dir.y !== -1) dir = {x:0,y:1};
+        else if (fy < 0 && dir.y !== 1) dir = {x:0,y:-1};
+      }
+    }
+  }
+  
+  const newHead = { x: head.x + dir.x, y: head.y + dir.y };
+  
+  // Wrap around edges
+  if (newHead.x < 0) newHead.x = cols - 1;
+  if (newHead.x >= cols) newHead.x = 0;
+  if (newHead.y < 0) newHead.y = rows - 1;
+  if (newHead.y >= rows) newHead.y = 0;
+  
+  snake.unshift(newHead);
+  
+  if (newHead.x === food.x && newHead.y === food.y) {
+    food = spawnFood();
+    if (tick % 20 === 0) specialFood = spawnFood();
+  } else {
+    snake.pop();
+  }
+  
+  if (specialFood && tick % 150 === 0) specialFood = null;
+  if (snake.length > 40) snake = snake.slice(0, 40);
+}
+
+function drawArena() {
+  actx.clearRect(0, 0, arenaCanvas.width, arenaCanvas.height);
+  
+  // Grid
+  actx.strokeStyle = 'rgba(10,31,12,0.4)';
+  actx.lineWidth = 0.5;
+  for (let x = 0; x <= cols; x++) {
+    actx.beginPath(); actx.moveTo(x * GRID, 0); actx.lineTo(x * GRID, arenaCanvas.height); actx.stroke();
+  }
+  for (let y = 0; y <= rows; y++) {
+    actx.beginPath(); actx.moveTo(0, y * GRID); actx.lineTo(arenaCanvas.width, y * GRID); actx.stroke();
+  }
+  
+  // Snake body
+  snake.forEach((seg, i) => {
+    if (i === 0) return;
+    const t = 1 - i / snake.length;
+    actx.fillStyle = `rgba(26,102,68,${t * 0.8})`;
+    const pad = 2;
+    actx.beginPath();
+    actx.roundRect(seg.x * GRID + pad, seg.y * GRID + pad, GRID - pad*2, GRID - pad*2, 3);
+    actx.fill();
+    
+    // Gold dot
+    if (i % 3 === 0) {
+      actx.fillStyle = `rgba(201,168,76,${t * 0.5})`;
+      actx.beginPath();
+      actx.arc(seg.x * GRID + GRID/2, seg.y * GRID + GRID/2, 2, 0, Math.PI*2);
+      actx.fill();
+    }
+  });
+  
+  // Head
+  const h = snake[0];
+  const headGrad = actx.createRadialGradient(h.x*GRID+GRID/2, h.y*GRID+GRID/2, 1, h.x*GRID+GRID/2, h.y*GRID+GRID/2, GRID*0.7);
+  headGrad.addColorStop(0, 'rgba(29,232,116,0.9)');
+  headGrad.addColorStop(1, 'rgba(10,100,50,0.6)');
+  actx.fillStyle = headGrad;
+  actx.shadowColor = '#1de874';
+  actx.shadowBlur = 15;
+  actx.beginPath();
+  actx.roundRect(h.x*GRID+1, h.y*GRID+1, GRID-2, GRID-2, 4);
+  actx.fill();
+  actx.shadowBlur = 0;
+  
+  // Food
+  const pulse = 0.7 + Math.sin(Date.now() * 0.005) * 0.3;
+  actx.fillStyle = `rgba(201,168,76,${pulse})`;
+  actx.shadowColor = '#c9a84c';
+  actx.shadowBlur = 12;
+  actx.beginPath();
+  const fs = GRID * 0.4;
+  actx.arc(food.x*GRID + GRID/2, food.y*GRID + GRID/2, fs, 0, Math.PI*2);
+  actx.fill();
+  actx.shadowBlur = 0;
+  
+  // Special food
+  if (specialFood) {
+    actx.fillStyle = 'rgba(232,69,96,0.9)';
+    actx.shadowColor = '#e84560';
+    actx.shadowBlur = 20;
+    actx.font = `${GRID * 0.7}px serif`;
+    actx.textAlign = 'center';
+    actx.textBaseline = 'middle';
+    actx.fillText('★', specialFood.x*GRID + GRID/2, specialFood.y*GRID + GRID/2);
+    actx.shadowBlur = 0;
+  }
+}
+
+let snakeTick = 0;
+function arenaLoop() {
+  snakeTick++;
+  if (snakeTick % 8 === 0) updateSnake();
+  drawArena();
+  requestAnimationFrame(arenaLoop);
+}
+arenaLoop();
+
+// ── HERO PARTICLES ──
+const heroParticles = document.getElementById('hero-particles');
+for (let i = 0; i < 25; i++) {
+  const p = document.createElement('div');
+  p.className = 'fp';
+  const size = Math.random() * 3 + 1;
+  const isGold = Math.random() > 0.6;
+  p.style.cssText = `
+    width:${size}px; height:${size}px;
+    background:${isGold ? '#c9a84c' : '#1de874'};
+    box-shadow: 0 0 ${size*3}px ${isGold ? '#c9a84c' : '#1de874'};
+    left:${Math.random()*100}%;
+    bottom:-10px;
+    animation-duration:${Math.random()*15 + 8}s;
+    animation-delay:${Math.random()*10}s;
+    --drift:${(Math.random()-0.5)*80}px;
+  `;
+  heroParticles.appendChild(p);
+}
+
+// ── WORLD PARTICLES ──
+document.querySelectorAll('.world-particles').forEach(container => {
+  const color = container.dataset.color || '#1de874';
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'world-particle';
+    const size = Math.random() * 3 + 1;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${color};
+      box-shadow:0 0 ${size*2}px ${color};
+      left:${Math.random()*100}%;
+      animation-duration:${Math.random()*8 + 4}s;
+      animation-delay:${Math.random()*6}s;
+      --drift:${(Math.random()-0.5)*30}px;
+    `;
+    container.appendChild(p);
+  }
+});
+
+// ── DNA CANVAS ──
+const dnaCanvas = document.getElementById('dna-canvas');
+const dctx = dnaCanvas.getContext('2d');
+function drawDNA() {
+  dctx.clearRect(0, 0, 400, 480);
+  const t = Date.now() * 0.001;
+  const cx = 200, cy = 240;
+  const amp = 80, freq = 0.6;
+  
+  // Draw double helix
+  for (let y = 0; y < 480; y += 2) {
+    const progress = y / 480;
+    const wave1 = Math.sin(y * freq * 0.1 + t) * amp;
+    const wave2 = Math.sin(y * freq * 0.1 + t + Math.PI) * amp;
+    const alpha = 0.3 + Math.sin(y * 0.05 + t) * 0.2;
+    
+    // Strand 1
+    dctx.fillStyle = `rgba(29,232,116,${alpha})`;
+    dctx.beginPath();
+    dctx.arc(cx + wave1, y, 3, 0, Math.PI*2);
+    dctx.fill();
+    
+    // Strand 2
+    dctx.fillStyle = `rgba(201,168,76,${alpha})`;
+    dctx.beginPath();
+    dctx.arc(cx + wave2, y, 3, 0, Math.PI*2);
+    dctx.fill();
+    
+    // Rungs
+    if (y % 30 < 4) {
+      const rAlpha = 0.2 + progress * 0.3;
+      const grad = dctx.createLinearGradient(cx + wave2, y, cx + wave1, y);
+      grad.addColorStop(0, `rgba(201,168,76,${rAlpha})`);
+      grad.addColorStop(0.5, `rgba(255,255,255,${rAlpha * 0.5})`);
+      grad.addColorStop(1, `rgba(29,232,116,${rAlpha})`);
+      dctx.strokeStyle = grad;
+      dctx.lineWidth = 1;
+      dctx.beginPath();
+      dctx.moveTo(cx + wave2, y);
+      dctx.lineTo(cx + wave1, y);
+      dctx.stroke();
+    }
+  }
+  
+  // Glow aura
+  const aura = dctx.createRadialGradient(cx, cy, 0, cx, cy, 120);
+  aura.addColorStop(0, 'rgba(29,232,116,0.05)');
+  aura.addColorStop(1, 'transparent');
+  dctx.fillStyle = aura;
+  dctx.fillRect(0, 0, 400, 480);
+  
+  requestAnimationFrame(drawDNA);
+}
+drawDNA();
+
+// ── GSAP SCROLL REVEALS ──
+gsap.registerPlugin(ScrollTrigger);
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.fromTo(el, 
+    { opacity: 0, y: 50 },
+    {
+      opacity: 1, y: 0,
+      duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 85%',
+        toggleActions: 'play none none none'
+      }
+    }
+  );
+});
+
+// Stagger world cards
+gsap.utils.toArray('.world-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity: 0, scale: 0.92 },
+    {
+      opacity: 1, scale: 1,
+      duration: 0.7,
+      delay: i * 0.08,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#worlds',
+        start: 'top 70%',
+        toggleActions: 'play none none none'
+      }
+    }
+  );
+});
+
+// Stagger feature cards
+gsap.utils.toArray('.feature-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity: 0, y: 30 },
+    {
+      opacity: 1, y: 0,
+      duration: 0.6,
+      delay: i * 0.1,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#features',
+        start: 'top 70%',
+        toggleActions: 'play none none none'
+      }
+    }
+  );
+});
+
+// Powerup rows stagger
+gsap.utils.toArray('.powerup-row').forEach((row, i) => {
+  gsap.fromTo(row,
+    { opacity: 0, x: 40 },
+    {
+      opacity: 1, x: 0,
+      duration: 0.5,
+      delay: i * 0.08,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#powerups',
+        start: 'top 70%',
+        toggleActions: 'play none none none'
+      }
+    }
+  );
+});
+
+// DNA bar animate on hover is handled by CSS
+// Add animated counter to ranks
+gsap.utils.toArray('.rank-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity: 0, y: 30, scale: 0.9 },
+    {
+      opacity: 1, y: 0, scale: 1,
+      duration: 0.5,
+      delay: i * 0.12,
+      ease: 'back.out(1.7)',
+      scrollTrigger: {
+        trigger: '#ranks',
+        start: 'top 70%',
+        toggleActions: 'play none none none'
+      }
+    }
+  );
+});
+
+// Store cards stagger
+gsap.utils.toArray('.store-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity: 0, y: 20 },
+    {
+      opacity: 1, y: 0,
+      duration: 0.5,
+      delay: i * 0.1,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#store-preview',
+        start: 'top 70%',
+        toggleActions: 'play none none none'
+      }
+    }
+  );
+});
+
+// Parallax on story glyph
+gsap.to('.story-glyph', {
+  yPercent: -30,
+  ease: 'none',
+  scrollTrigger: {
+    trigger: '#story',
+    start: 'top bottom',
+    end: 'bottom top',
+    scrub: true
+  }
+});
+
+// Footer title reveal
+gsap.fromTo('.footer-title', 
+  { opacity: 0, scale: 0.9 },
+  {
+    opacity: 1, scale: 1,
+    duration: 1.2,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '#footer-cta',
+      start: 'top 70%',
+      toggleActions: 'play none none none'
+    }
+  }
+);
+
+// Nav scroll effect
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 80) {
+    nav.style.background = 'rgba(2,11,4,0.97)';
+    nav.style.boxShadow = '0 1px 0 rgba(29,232,116,0.08)';
+  } else {
+    nav.style.background = 'linear-gradient(180deg, rgba(2,11,4,0.95) 0%, transparent 100%)';
+    nav.style.boxShadow = 'none';
+  }
+});
+</script>
 </body>
 </html>
